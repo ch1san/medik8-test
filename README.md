@@ -36,6 +36,7 @@
 
 ### Technical Details
 
+- Upsells managed in Search & Discovery app
 - Uses Shopify's product recommendations API
 - Maintains accessibility standards
 - Optimized for performance with debounced updates
