@@ -70,9 +70,11 @@ class CartDrawer extends HTMLElement {
   }
 
   initUpsell() {
+    // Get the container for upsell products
     const upsellContainer = this.querySelector('.cart-drawer-upsell');
     if (!upsellContainer) return;
 
+    // Get the URL for fetching product recommendations from the container's data attribute
     const productRecommendationsUrl = upsellContainer.dataset.url;
     if (!productRecommendationsUrl) return;
 
@@ -81,24 +83,28 @@ class CartDrawer extends HTMLElement {
 
   async loadUpsellProducts(url) {
     try {
+      // Get configuration options from data attributes
       const priceSorting = this.querySelector('.cart-drawer-upsell').dataset.upsellPricing;
       const useLastItemAdded = this.querySelector('.cart-drawer-upsell').dataset.upsellTargetItem;
       let cartItems = [];
 
+      // Determine which cart items to use for recommendations
       if (useLastItemAdded === 'true') {
+        // Only use the most recently added item
         cartItems.push(this.querySelectorAll('.cart-item')[0].dataset.productId);
       } else {
-        // Get all cart items' product IDs
+        // Use all items in cart
         cartItems = Array.from(this.querySelectorAll('.cart-item')).map((item) => {
           const productId = item.dataset.productId;
           return productId;
         });
       }
 
+      // Create a Set for efficient lookup of cart items
       const cartItemIds = new Set(cartItems);
       const upsellCount = this.querySelector('.cart-drawer-upsell').dataset.upsellCount;
 
-      // Fetch recommendations for each cart item
+      // Fetch recommendations for each cart item in parallel
       const recommendationsPromises = Array.from(cartItemIds).map((productId) =>
         fetch(`${url}?section_id=cart-drawer&product_id=${productId}&limit=10`)
           .then((response) => response.text())
@@ -115,15 +121,18 @@ class CartDrawer extends HTMLElement {
           })
       );
 
-      // Wait for all recommendations to load
+      // Wait for all recommendation requests to complete
       const allRecommendations = await Promise.all(recommendationsPromises);
 
-      // Flatten and filter recommendations
+      // Process recommendations:
+      // 1. Flatten the array of arrays
+      // 2. Remove products that are already in cart
+      // 3. Remove duplicate recommendations
+      // 4. Sort by price according to priceSorting setting
       const uniqueRecommendations = allRecommendations
         .flat()
-        .filter((rec) => !cartItemIds.has(rec.id)) // Remove products already in cart
+        .filter((rec) => !cartItemIds.has(rec.id))
         .reduce((unique, rec) => {
-          // Remove duplicates
           if (!unique.some((item) => item.id === rec.id)) {
             unique.push(rec);
           }
@@ -140,14 +149,13 @@ class CartDrawer extends HTMLElement {
           }
         });
 
-      // Get the upsell container and list
       const upsellContainer = this.querySelector('.cart-drawer-upsell');
       const upsellList = upsellContainer.querySelector('.cart-drawer-upsell__list');
 
-      // Only show the section if we have recommendations
+      // Display recommendations if any exist
       if (uniqueRecommendations.length > 0) {
-        // Clear existing items and add new ones
         upsellList.innerHTML = '';
+        // Only show the number of recommendations specified by upsellCount
         uniqueRecommendations.slice(0, upsellCount).forEach((rec) => {
           const li = document.createElement('li');
           li.className = 'cart-drawer-upsell__item';
@@ -174,7 +182,6 @@ class CartDrawer extends HTMLElement {
       sectionElement.innerHTML = this.getSectionInnerHTML(parsedState.sections[section.id], section.selector);
     });
 
-    // After rendering cart contents, reload upsell products
     this.initUpsell();
 
     setTimeout(() => {
