@@ -42,6 +42,7 @@
 
 {%- unless target == null and placeholder == null -%}
   <div
+    data-price="{{ price }}"
     class="
       price
       {%- if price_class %} {{ price_class }}{% endif -%}

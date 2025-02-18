@@ -118,7 +118,12 @@
 
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
-                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row">
+                      <tr
+                        id="CartDrawer-Item-{{ item.index | plus: 1 }}"
+                        class="cart-item"
+                        role="row"
+                        data-product-id="{{ item.product.id }}"
+                      >
                         <td class="cart-item__media" role="cell" headers="CartDrawer-ColumnProductImage">
                           {% if item.image %}
                             {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
@@ -454,7 +459,12 @@
           <div id="CartDrawer-CartErrors" role="alert"></div>
         </form>
       </cart-drawer-items>
+
       <div class="drawer__footer">
+        {% if settings.show_upsell == true %}
+          {%- render 'cart-drawer-upsell' -%}
+        {% endif %}
+
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer">
             <summary>

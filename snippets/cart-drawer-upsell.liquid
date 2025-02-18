@@ -1,0 +1,19 @@
+{{ 'cart-drawer-upsell.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="cart-drawer-upsell"
+  data-upsell-count="{{ settings.upsell_count }}"
+  data-upsell-target-item="{{ settings.upsell_target_item }}"
+  data-upsell-pricing="{{ settings.upsell_pricing }}"
+  data-url="{{ routes.product_recommendations_url }}"
+>
+  <h2 class="cart-drawer-upsell__heading">{{ 'sections.cart.headings.upsell' | t }}</h2>
+
+  <ul class="cart-drawer-upsell__list">
+    {%- for product in recommendations.products -%}
+      <li class="cart-drawer-upsell__item">
+        {% render 'card-product', card_product: product, quick_add: 'standard', upsell: true %}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>

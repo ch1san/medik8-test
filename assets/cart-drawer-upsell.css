@@ -1,0 +1,26 @@
+.cart-drawer-upsell {
+  padding: 0 0 3rem;
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+.cart-drawer-upsell__heading {
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+}
+
+.cart-drawer-upsell__list {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.cart-drawer-upsell__item {
+  flex: 0 0 50%;
+}
+
+.cart-drawer-upsell__item .card-wrapper {
+  min-width: 0;
+}
